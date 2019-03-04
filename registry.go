@@ -54,10 +54,6 @@ func (a *registryAdapter) Register(s string, v interface{}) error {
 		switch v := v.(type) {
 		case metrics.Counter:
 			c = NewCounterAdapter(s, v)
-		case metrics.Timer:
-			c = NewTimerAdapter(s, v)
-		case metrics.Meter:
-			c = NewMeterAdapter(s, v)
 		case metrics.Gauge:
 			c = NewGaugeAdapter(s, v)
 		case metrics.GaugeFloat64:
@@ -66,6 +62,10 @@ func (a *registryAdapter) Register(s string, v interface{}) error {
 			c = NewHealthcheckAdapter(s, v)
 		case metrics.Histogram:
 			c = NewHistogramAdapter(s, v)
+		case metrics.Meter:
+			c = NewMeterAdapter(s, v)
+		case metrics.Timer:
+			c = NewTimerAdapter(s, v)
 		default:
 			fmt.Printf("%s %T %+v\n", s, v, v)
 			return ErrExpectedCollector
