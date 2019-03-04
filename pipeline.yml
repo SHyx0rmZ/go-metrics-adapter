@@ -49,7 +49,7 @@ jobs:
               - -ec
               - |
                 apk update --quiet
-                apk add --quiet --no-progress git
+                apk add --no-progress build-base git
                 go test ./...
         on_failure:
           put: build-status
