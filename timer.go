@@ -10,16 +10,16 @@ type timer struct {
 	histogramAdapter
 }
 
-func NewTimer(name string, m metrics.Timer) interface {
+func NewTimer(name string, metric metrics.Timer) interface {
 	prometheus.Collector
 	metrics.Timer
 } {
 	return timer{
-		Timer: m,
+		Timer: metric,
 		histogramAdapter: histogramAdapter{
-			count:       intToUint(m.Count),
-			sum:         intToFloat(m.Sum),
-			percentile:  floatToUint(m.Percentile),
+			count:       intToUint(metric.Count),
+			sum:         intToFloat(metric.Sum),
+			percentile:  floatToUint(metric.Percentile),
 			description: newDescriptionFrom(name),
 		},
 	}

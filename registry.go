@@ -59,23 +59,23 @@ func (a *registry) Register(name string, v interface{}) error {
 		if reflect.TypeOf(v).Kind() == reflect.Func {
 			v = reflect.ValueOf(v).Call(nil)[0].Interface()
 		}
-		switch v := v.(type) {
+		switch metric := v.(type) {
 		case metrics.Counter:
-			c = NewCounter(name, v)
+			c = NewCounter(name, metric)
 		case metrics.Gauge:
-			c = NewGauge(name, v)
+			c = NewGauge(name, metric)
 		case metrics.GaugeFloat64:
-			c = NewGaugeFloat64(name, v)
+			c = NewGaugeFloat64(name, metric)
 		case metrics.Healthcheck:
-			c = NewHealthcheck(name, v)
+			c = NewHealthcheck(name, metric)
 		case metrics.Histogram:
-			c = NewHistogram(name, v)
+			c = NewHistogram(name, metric)
 		case metrics.Meter:
-			c = NewMeter(name, v)
+			c = NewMeter(name, metric)
 		case metrics.Timer:
-			c = NewTimer(name, v)
+			c = NewTimer(name, metric)
 		default:
-			fmt.Printf("%s %T %+v\n", name, v, v)
+			fmt.Printf("%s %T %+v\n", name, metric, metric)
 			return ErrExpectedCollector
 		}
 	}
@@ -90,8 +90,8 @@ func (a *registry) Register(name string, v interface{}) error {
 }
 
 func (a *registry) RunHealthchecks() {
-	a.Each(func(name string, v interface{}) {
-		if h, ok := v.(metrics.Healthcheck); ok {
+	a.Each(func(name string, metric interface{}) {
+		if h, ok := metric.(metrics.Healthcheck); ok {
 			h.Check()
 		}
 	})

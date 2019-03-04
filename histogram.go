@@ -10,16 +10,16 @@ type histogram struct {
 	histogramAdapter
 }
 
-func NewHistogram(name string, m metrics.Histogram) interface {
+func NewHistogram(name string, metric metrics.Histogram) interface {
 	prometheus.Collector
 	metrics.Histogram
 } {
 	return histogram{
-		Histogram: m,
+		Histogram: metric,
 		histogramAdapter: histogramAdapter{
-			count:       intToUint(m.Count),
-			sum:         intToFloat(m.Sum),
-			percentile:  floatToUint(m.Percentile),
+			count:       intToUint(metric.Count),
+			sum:         intToFloat(metric.Sum),
+			percentile:  floatToUint(metric.Percentile),
 			description: newDescriptionFrom(name),
 		},
 	}

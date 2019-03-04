@@ -10,15 +10,15 @@ type healthcheck struct {
 	gaugeAdapter
 }
 
-func NewHealthcheck(name string, m metrics.Healthcheck) interface {
+func NewHealthcheck(name string, metric metrics.Healthcheck) interface {
 	prometheus.Collector
 	metrics.Healthcheck
 } {
 	return healthcheck{
-		Healthcheck: m,
+		Healthcheck: metric,
 		gaugeAdapter: gaugeAdapter{
 			metric: func() float64 {
-				if m.Error() != nil {
+				if metric.Error() != nil {
 					return 0
 				}
 				return 1

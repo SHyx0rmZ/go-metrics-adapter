@@ -10,14 +10,14 @@ type gauge struct {
 	gaugeAdapter
 }
 
-func NewGauge(name string, m metrics.Gauge) interface {
+func NewGauge(name string, metric metrics.Gauge) interface {
 	prometheus.Collector
 	metrics.Gauge
 } {
 	return gauge{
-		Gauge: m,
+		Gauge: metric,
 		gaugeAdapter: gaugeAdapter{
-			metric:      intToFloat(m.Value),
+			metric:      intToFloat(metric.Value),
 			description: newDescriptionFrom(name),
 		},
 	}
@@ -28,14 +28,14 @@ type gaugeFloat64 struct {
 	gaugeAdapter
 }
 
-func NewGaugeFloat64(name string, m metrics.GaugeFloat64) interface {
+func NewGaugeFloat64(name string, metric metrics.GaugeFloat64) interface {
 	prometheus.Collector
 	metrics.GaugeFloat64
 } {
 	return gaugeFloat64{
-		GaugeFloat64: m,
+		GaugeFloat64: metric,
 		gaugeAdapter: gaugeAdapter{
-			metric:      m.Value,
+			metric:      metric.Value,
 			description: newDescriptionFrom(name),
 		},
 	}
