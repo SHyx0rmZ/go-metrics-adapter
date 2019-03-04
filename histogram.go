@@ -7,7 +7,7 @@ import (
 
 type histogram struct {
 	metrics.Histogram
-	__histogramAdapter
+	histogramAdapter
 }
 
 func NewHistogram(s string, m metrics.Histogram) interface {
@@ -16,7 +16,7 @@ func NewHistogram(s string, m metrics.Histogram) interface {
 } {
 	return histogram{
 		Histogram: m,
-		__histogramAdapter: __histogramAdapter{
+		histogramAdapter: histogramAdapter{
 			count:      intToUint(m.Count),
 			sum:        intToFloat(m.Sum),
 			percentile: floatToUint(m.Percentile),

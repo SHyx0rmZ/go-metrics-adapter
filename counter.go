@@ -7,7 +7,7 @@ import (
 
 type counter struct {
 	metrics.Counter
-	__gaugeAdapter
+	gaugeAdapter
 }
 
 func NewCounter(s string, m metrics.Counter) interface {
@@ -16,7 +16,7 @@ func NewCounter(s string, m metrics.Counter) interface {
 } {
 	return counter{
 		Counter: m,
-		__gaugeAdapter: __gaugeAdapter{
+		gaugeAdapter: gaugeAdapter{
 			metric: intToFloat(m.Count),
 			desc:   desc(s),
 		},

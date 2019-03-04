@@ -6,24 +6,24 @@ import (
 	dto "github.com/prometheus/client_model/go"
 )
 
-type __gaugeAdapter struct {
+type gaugeAdapter struct {
 	metric func() float64
 	desc   *prometheus.Desc
 }
 
-func (a __gaugeAdapter) Describe(ch chan<- *prometheus.Desc) {
+func (a gaugeAdapter) Describe(ch chan<- *prometheus.Desc) {
 	ch <- a.desc
 }
 
-func (a __gaugeAdapter) Desc() *prometheus.Desc {
+func (a gaugeAdapter) Desc() *prometheus.Desc {
 	return a.desc
 }
 
-func (a __gaugeAdapter) Collect(ch chan<- prometheus.Metric) {
+func (a gaugeAdapter) Collect(ch chan<- prometheus.Metric) {
 	ch <- a
 }
 
-func (a __gaugeAdapter) Write(m *dto.Metric) error {
+func (a gaugeAdapter) Write(m *dto.Metric) error {
 	m.Reset()
 	m.Gauge = &dto.Gauge{
 		Value: proto.Float64(a.metric()),
@@ -31,26 +31,26 @@ func (a __gaugeAdapter) Write(m *dto.Metric) error {
 	return nil
 }
 
-type __histogramAdapter struct {
+type histogramAdapter struct {
 	count      func() uint64
 	sum        func() float64
 	percentile func(p float64) uint64
 	desc       *prometheus.Desc
 }
 
-func (a __histogramAdapter) Describe(ch chan<- *prometheus.Desc) {
+func (a histogramAdapter) Describe(ch chan<- *prometheus.Desc) {
 	ch <- a.desc
 }
 
-func (a __histogramAdapter) Desc() *prometheus.Desc {
+func (a histogramAdapter) Desc() *prometheus.Desc {
 	return a.desc
 }
 
-func (a __histogramAdapter) Collect(ch chan<- prometheus.Metric) {
+func (a histogramAdapter) Collect(ch chan<- prometheus.Metric) {
 	ch <- a
 }
 
-func (a __histogramAdapter) Write(m *dto.Metric) error {
+func (a histogramAdapter) Write(m *dto.Metric) error {
 	m.Reset()
 	m.Histogram = &dto.Histogram{
 		SampleCount: proto.Uint64(a.count()),

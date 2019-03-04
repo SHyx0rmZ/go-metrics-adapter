@@ -7,7 +7,7 @@ import (
 
 type healthcheck struct {
 	metrics.Healthcheck
-	__gaugeAdapter
+	gaugeAdapter
 }
 
 func NewHealthcheck(s string, m metrics.Healthcheck) interface {
@@ -16,7 +16,7 @@ func NewHealthcheck(s string, m metrics.Healthcheck) interface {
 } {
 	return healthcheck{
 		Healthcheck: m,
-		__gaugeAdapter: __gaugeAdapter{
+		gaugeAdapter: gaugeAdapter{
 			metric: func() float64 {
 				if m.Error() != nil {
 					return 0

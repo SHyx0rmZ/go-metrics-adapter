@@ -7,7 +7,7 @@ import (
 
 type gauge struct {
 	metrics.Gauge
-	__gaugeAdapter
+	gaugeAdapter
 }
 
 func NewGauge(s string, m metrics.Gauge) interface {
@@ -16,7 +16,7 @@ func NewGauge(s string, m metrics.Gauge) interface {
 } {
 	return gauge{
 		Gauge: m,
-		__gaugeAdapter: __gaugeAdapter{
+		gaugeAdapter: gaugeAdapter{
 			metric: intToFloat(m.Value),
 			desc:   desc(s),
 		},
@@ -25,7 +25,7 @@ func NewGauge(s string, m metrics.Gauge) interface {
 
 type gaugeFloat64 struct {
 	metrics.GaugeFloat64
-	__gaugeAdapter
+	gaugeAdapter
 }
 
 func NewGaugeFloat64(s string, m metrics.GaugeFloat64) interface {
@@ -34,7 +34,7 @@ func NewGaugeFloat64(s string, m metrics.GaugeFloat64) interface {
 } {
 	return gaugeFloat64{
 		GaugeFloat64: m,
-		__gaugeAdapter: __gaugeAdapter{
+		gaugeAdapter: gaugeAdapter{
 			metric: m.Value,
 			desc:   desc(s),
 		},
