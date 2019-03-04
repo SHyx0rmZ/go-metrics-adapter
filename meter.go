@@ -5,7 +5,6 @@ import (
 	"github.com/rcrowley/go-metrics"
 )
 
-
 type meterAdapter struct {
 	metrics.Meter
 	__gaugeAdapter

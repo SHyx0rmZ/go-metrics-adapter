@@ -10,7 +10,6 @@ type counterAdapter struct {
 	__gaugeAdapter
 }
 
-
 func NewCounterAdapter(s string, m metrics.Counter) interface {
 	prometheus.Collector
 	metrics.Counter
