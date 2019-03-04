@@ -64,6 +64,8 @@ func (a *registryAdapter) Register(s string, v interface{}) error {
 			c = NewGaugeFloat64Adapter(s, v)
 		case metrics.Healthcheck:
 			c = NewHealthcheckAdapter(s, v)
+		case metrics.Histogram:
+			c = NewHistogramAdapter(s, v)
 		default:
 			fmt.Printf("%s %T %+v\n", s, v, v)
 			return ErrExpectedCollector
