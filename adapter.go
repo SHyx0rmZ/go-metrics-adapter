@@ -42,7 +42,7 @@ func (a histogramAdapter) Write(m *dto.Metric) error {
 	}
 	for _, b := range prometheus.DefBuckets {
 		m.Histogram.Bucket = append(m.Histogram.Bucket, &dto.Bucket{
-			CumulativeCount: proto.Uint64(uint64(a.percentile(b))),
+			CumulativeCount: proto.Uint64(a.percentile(b)),
 			UpperBound:      proto.Float64(b),
 		})
 	}

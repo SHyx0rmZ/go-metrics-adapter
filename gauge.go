@@ -17,7 +17,9 @@ func NewGauge(name string, metric metrics.Gauge) interface {
 	return gauge{
 		Gauge: metric,
 		gaugeAdapter: gaugeAdapter{
-			metric:      intToFloat(metric.Value),
+			metric: func() float64 {
+				return float64(metric.Value())
+			},
 			description: newDescriptionFrom(name),
 		},
 	}

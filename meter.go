@@ -17,7 +17,9 @@ func NewMeter(name string, metric metrics.Meter) interface {
 	return meter{
 		Meter: metric,
 		gaugeAdapter: gaugeAdapter{
-			metric:      intToFloat(metric.Count),
+			metric: func() float64 {
+				return float64(metric.Count())
+			},
 			description: newDescriptionFrom(name),
 		},
 	}
