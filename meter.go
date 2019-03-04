@@ -10,7 +10,7 @@ type meter struct {
 	gaugeAdapter
 }
 
-func NewMeter(s string, m metrics.Meter) interface {
+func NewMeter(name string, m metrics.Meter) interface {
 	prometheus.Collector
 	metrics.Meter
 } {
@@ -18,7 +18,7 @@ func NewMeter(s string, m metrics.Meter) interface {
 		Meter: m,
 		gaugeAdapter: gaugeAdapter{
 			metric:      intToFloat(m.Count),
-			description: newDescriptionFrom(s),
+			description: newDescriptionFrom(name),
 		},
 	}
 }

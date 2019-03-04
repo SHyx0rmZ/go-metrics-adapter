@@ -11,8 +11,9 @@ import (
 
 type registry struct {
 	registerer prometheus.Registerer
-	names      map[string]prometheus.Collector
-	mu         sync.Mutex
+
+	names map[string]prometheus.Collector
+	mu    sync.Mutex
 }
 
 func NewRegistry(registerer prometheus.Registerer) metrics.Registry {
@@ -25,34 +26,34 @@ func NewRegistry(registerer prometheus.Registerer) metrics.Registry {
 func (a *registry) Each(f func(string, interface{})) {
 	a.mu.Lock()
 	defer a.mu.Unlock()
-	for s, c := range a.names {
-		f(s, c)
+	for name, collector := range a.names {
+		f(name, collector)
 	}
 }
 
-func (a *registry) Get(s string) interface{} {
+func (a *registry) Get(name string) interface{} {
 	a.mu.Lock()
 	defer a.mu.Unlock()
-	return a.names[s]
+	return a.names[name]
 }
 
 func (a *registry) GetAll() map[string]map[string]interface{} {
 	panic("implement me")
 }
 
-func (a *registry) GetOrRegister(s string, v interface{}) interface{} {
-	c := a.Get(s)
+func (a *registry) GetOrRegister(name string, v interface{}) interface{} {
+	c := a.Get(name)
 	if c == nil {
-		err := a.Register(s, v)
+		err := a.Register(name, v)
 		if err != nil {
 			panic(err)
 		}
-		return a.Get(s)
+		return a.Get(name)
 	}
 	return c
 }
 
-func (a *registry) Register(s string, v interface{}) error {
+func (a *registry) Register(name string, v interface{}) error {
 	c, ok := v.(prometheus.Collector)
 	if !ok {
 		if reflect.TypeOf(v).Kind() == reflect.Func {
@@ -60,21 +61,21 @@ func (a *registry) Register(s string, v interface{}) error {
 		}
 		switch v := v.(type) {
 		case metrics.Counter:
-			c = NewCounter(s, v)
+			c = NewCounter(name, v)
 		case metrics.Gauge:
-			c = NewGauge(s, v)
+			c = NewGauge(name, v)
 		case metrics.GaugeFloat64:
-			c = NewGaugeFloat64(s, v)
+			c = NewGaugeFloat64(name, v)
 		case metrics.Healthcheck:
-			c = NewHealthcheck(s, v)
+			c = NewHealthcheck(name, v)
 		case metrics.Histogram:
-			c = NewHistogram(s, v)
+			c = NewHistogram(name, v)
 		case metrics.Meter:
-			c = NewMeter(s, v)
+			c = NewMeter(name, v)
 		case metrics.Timer:
-			c = NewTimer(s, v)
+			c = NewTimer(name, v)
 		default:
-			fmt.Printf("%s %T %+v\n", s, v, v)
+			fmt.Printf("%s %T %+v\n", name, v, v)
 			return ErrExpectedCollector
 		}
 	}
@@ -84,36 +85,36 @@ func (a *registry) Register(s string, v interface{}) error {
 	if err != nil {
 		return err
 	}
-	a.names[s] = c
+	a.names[name] = c
 	return nil
 }
 
 func (a *registry) RunHealthchecks() {
-	a.Each(func(s string, i interface{}) {
-		if h, ok := i.(metrics.Healthcheck); ok {
+	a.Each(func(name string, v interface{}) {
+		if h, ok := v.(metrics.Healthcheck); ok {
 			h.Check()
 		}
 	})
 }
 
-func (a *registry) Unregister(s string) {
+func (a *registry) Unregister(name string) {
 	a.mu.Lock()
 	defer a.mu.Unlock()
-	if i, ok := a.names[s].(metrics.Stoppable); ok {
+	if i, ok := a.names[name].(metrics.Stoppable); ok {
 		i.Stop()
 	}
-	a.registerer.Unregister(a.names[s])
-	delete(a.names, s)
+	a.registerer.Unregister(a.names[name])
+	delete(a.names, name)
 }
 
 func (a *registry) UnregisterAll() {
 	a.mu.Lock()
 	defer a.mu.Unlock()
-	for s, c := range a.names {
-		if i, ok := a.names[s].(metrics.Stoppable); ok {
+	for name, c := range a.names {
+		if i, ok := a.names[name].(metrics.Stoppable); ok {
 			i.Stop()
 		}
 		a.registerer.Unregister(c)
-		delete(a.names, s)
+		delete(a.names, name)
 	}
 }

@@ -10,7 +10,7 @@ type counter struct {
 	gaugeAdapter
 }
 
-func NewCounter(s string, m metrics.Counter) interface {
+func NewCounter(name string, m metrics.Counter) interface {
 	prometheus.Collector
 	metrics.Counter
 } {
@@ -18,7 +18,7 @@ func NewCounter(s string, m metrics.Counter) interface {
 		Counter: m,
 		gaugeAdapter: gaugeAdapter{
 			metric:      intToFloat(m.Count),
-			description: newDescriptionFrom(s),
+			description: newDescriptionFrom(name),
 		},
 	}
 }

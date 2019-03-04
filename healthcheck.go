@@ -10,7 +10,7 @@ type healthcheck struct {
 	gaugeAdapter
 }
 
-func NewHealthcheck(s string, m metrics.Healthcheck) interface {
+func NewHealthcheck(name string, m metrics.Healthcheck) interface {
 	prometheus.Collector
 	metrics.Healthcheck
 } {
@@ -23,7 +23,7 @@ func NewHealthcheck(s string, m metrics.Healthcheck) interface {
 				}
 				return 1
 			},
-			description: newDescriptionFrom(s),
+			description: newDescriptionFrom(name),
 		},
 	}
 }

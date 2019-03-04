@@ -10,7 +10,7 @@ type histogram struct {
 	histogramAdapter
 }
 
-func NewHistogram(s string, m metrics.Histogram) interface {
+func NewHistogram(name string, m metrics.Histogram) interface {
 	prometheus.Collector
 	metrics.Histogram
 } {
@@ -20,7 +20,7 @@ func NewHistogram(s string, m metrics.Histogram) interface {
 			count:       intToUint(m.Count),
 			sum:         intToFloat(m.Sum),
 			percentile:  floatToUint(m.Percentile),
-			description: newDescriptionFrom(s),
+			description: newDescriptionFrom(name),
 		},
 	}
 }
