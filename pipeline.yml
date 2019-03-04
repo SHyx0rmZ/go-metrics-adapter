@@ -27,6 +27,7 @@ jobs:
     plan:
       - get: metrics-adapter
         trigger: true
+        version: every
       - put: build-status
         params:
           commit: metrics-adapter
