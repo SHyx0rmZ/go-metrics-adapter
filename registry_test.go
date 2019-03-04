@@ -3,17 +3,8 @@ package metrics_adapter
 import (
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/rcrowley/go-metrics"
-	"sync"
 	"testing"
 )
-
-func NewRegistry() metrics.Registry {
-	return &registryAdapter{
-		registerer: prometheus.NewRegistry(),
-		names:      make(map[string]prometheus.Collector),
-		mu:         sync.Mutex{},
-	}
-}
 
 func NewCounter() metrics.Counter {
 	return metrics.NewCounter()
@@ -34,7 +25,7 @@ func NewTimer() metrics.Timer {
 type Counter metrics.Counter
 
 func BenchmarkRegistry(b *testing.B) {
-	r := NewRegistry()
+	r := NewRegistry(prometheus.NewRegistry())
 	r.Register("foo", NewCounter())
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
@@ -43,7 +34,7 @@ func BenchmarkRegistry(b *testing.B) {
 }
 
 func BenchmarkRegistryParallel(b *testing.B) {
-	r := NewRegistry()
+	r := NewRegistry(prometheus.NewRegistry())
 	b.ResetTimer()
 	b.RunParallel(func(pb *testing.PB) {
 		for pb.Next() {
@@ -53,7 +44,7 @@ func BenchmarkRegistryParallel(b *testing.B) {
 }
 
 func TestRegistry(t *testing.T) {
-	r := NewRegistry()
+	r := NewRegistry(prometheus.NewRegistry())
 	r.Register("foo", NewCounter())
 	i := 0
 	r.Each(func(name string, iface interface{}) {
@@ -77,7 +68,7 @@ func TestRegistry(t *testing.T) {
 }
 
 func TestRegistryDuplicate(t *testing.T) {
-	r := NewRegistry()
+	r := NewRegistry(prometheus.NewRegistry())
 	if err := r.Register("foo", NewCounter()); nil != err {
 		t.Fatal(err)
 	}
@@ -97,7 +88,7 @@ func TestRegistryDuplicate(t *testing.T) {
 }
 
 func TestRegistryGet(t *testing.T) {
-	r := NewRegistry()
+	r := NewRegistry(prometheus.NewRegistry())
 	r.Register("foo", NewCounter())
 	if count := r.Get("foo").(Counter).Count(); 0 != count {
 		t.Fatal(count)
@@ -109,7 +100,7 @@ func TestRegistryGet(t *testing.T) {
 }
 
 func TestRegistryGetOrRegister(t *testing.T) {
-	r := NewRegistry()
+	r := NewRegistry(prometheus.NewRegistry())
 
 	// First metric wins with GetOrRegister
 	_ = r.GetOrRegister("foo", NewCounter())
@@ -134,7 +125,7 @@ func TestRegistryGetOrRegister(t *testing.T) {
 }
 
 func TestRegistryGetOrRegisterWithLazyInstantiation(t *testing.T) {
-	r := NewRegistry()
+	r := NewRegistry(prometheus.NewRegistry())
 
 	// First metric wins with GetOrRegister
 	_ = r.GetOrRegister("foo", NewCounter)
@@ -160,7 +151,7 @@ func TestRegistryGetOrRegisterWithLazyInstantiation(t *testing.T) {
 
 func TestRegistryUnregister(t *testing.T) {
 	l := len(arbiter.meters)
-	r := NewRegistry()
+	r := NewRegistry(prometheus.NewRegistry())
 	r.Register("foo", NewCounter())
 	r.Register("bar", NewMeter())
 	r.Register("baz", NewTimer())

@@ -15,6 +15,13 @@ type registryAdapter struct {
 	mu         sync.Mutex
 }
 
+func NewRegistry(registerer prometheus.Registerer) metrics.Registry {
+	return &registryAdapter{
+		registerer: registerer,
+		names:      make(map[string]prometheus.Collector),
+	}
+}
+
 func (a *registryAdapter) Each(f func(string, interface{})) {
 	a.mu.Lock()
 	defer a.mu.Unlock()
