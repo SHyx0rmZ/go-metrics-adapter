@@ -56,6 +56,8 @@ func (a *registryAdapter) Register(s string, v interface{}) error {
 			c = NewCounterAdapter(s, v)
 		case metrics.Timer:
 			c = NewTimerAdapter(s, v)
+		case metrics.Meter:
+			c = NewMeterAdapter(s, v)
 		default:
 			fmt.Printf("%s %T %+v\n", s, v, v)
 			return ErrExpectedCollector
