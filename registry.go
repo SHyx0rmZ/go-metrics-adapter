@@ -60,6 +60,8 @@ func (a *registryAdapter) Register(s string, v interface{}) error {
 			c = NewMeterAdapter(s, v)
 		case metrics.Gauge:
 			c = NewGaugeAdapter(s, v)
+		case metrics.GaugeFloat64:
+			c = NewGaugeFloat64Adapter(s, v)
 		default:
 			fmt.Printf("%s %T %+v\n", s, v, v)
 			return ErrExpectedCollector

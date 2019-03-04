@@ -22,3 +22,21 @@ func NewGaugeAdapter(s string, m metrics.Gauge) interface {
 		},
 	}
 }
+
+type gaugeFloat64Adapter struct {
+	metrics.GaugeFloat64
+	__gaugeAdapter
+}
+
+func NewGaugeFloat64Adapter(s string, m metrics.GaugeFloat64) interface {
+	prometheus.Collector
+	metrics.GaugeFloat64
+} {
+	return gaugeFloat64Adapter{
+		GaugeFloat64: m,
+		__gaugeAdapter: __gaugeAdapter{
+			metric: m.Value,
+			desc:   desc(s),
+		},
+	}
+}
