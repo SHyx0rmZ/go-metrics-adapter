@@ -18,7 +18,7 @@ func NewGauge(s string, m metrics.Gauge) interface {
 		Gauge: m,
 		gaugeAdapter: gaugeAdapter{
 			metric:      intToFloat(m.Value),
-			description: desc(s),
+			description: newDescriptionFrom(s),
 		},
 	}
 }
@@ -36,7 +36,7 @@ func NewGaugeFloat64(s string, m metrics.GaugeFloat64) interface {
 		GaugeFloat64: m,
 		gaugeAdapter: gaugeAdapter{
 			metric:      m.Value,
-			description: desc(s),
+			description: newDescriptionFrom(s),
 		},
 	}
 }

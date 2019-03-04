@@ -20,7 +20,7 @@ func NewHistogram(s string, m metrics.Histogram) interface {
 			count:       intToUint(m.Count),
 			sum:         intToFloat(m.Sum),
 			percentile:  floatToUint(m.Percentile),
-			description: desc(s),
+			description: newDescriptionFrom(s),
 		},
 	}
 }

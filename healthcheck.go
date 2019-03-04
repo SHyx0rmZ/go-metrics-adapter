@@ -23,7 +23,7 @@ func NewHealthcheck(s string, m metrics.Healthcheck) interface {
 				}
 				return 1
 			},
-			description: desc(s),
+			description: newDescriptionFrom(s),
 		},
 	}
 }

@@ -20,7 +20,7 @@ func NewTimer(s string, m metrics.Timer) interface {
 			count:       intToUint(m.Count),
 			sum:         intToFloat(m.Sum),
 			percentile:  floatToUint(m.Percentile),
-			description: desc(s),
+			description: newDescriptionFrom(s),
 		},
 	}
 }
