@@ -5,16 +5,16 @@ import (
 	"github.com/rcrowley/go-metrics"
 )
 
-type healthcheckAdapter struct {
+type healthcheck struct {
 	metrics.Healthcheck
 	__gaugeAdapter
 }
 
-func NewHealthcheckAdapter(s string, m metrics.Healthcheck) interface {
+func NewHealthcheck(s string, m metrics.Healthcheck) interface {
 	prometheus.Collector
 	metrics.Healthcheck
 } {
-	return healthcheckAdapter{
+	return healthcheck{
 		Healthcheck: m,
 		__gaugeAdapter: __gaugeAdapter{
 			metric: func() float64 {

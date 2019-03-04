@@ -9,20 +9,20 @@ import (
 	"github.com/rcrowley/go-metrics"
 )
 
-type registryAdapter struct {
+type registry struct {
 	registerer prometheus.Registerer
 	names      map[string]prometheus.Collector
 	mu         sync.Mutex
 }
 
 func NewRegistry(registerer prometheus.Registerer) metrics.Registry {
-	return &registryAdapter{
+	return &registry{
 		registerer: registerer,
 		names:      make(map[string]prometheus.Collector),
 	}
 }
 
-func (a *registryAdapter) Each(f func(string, interface{})) {
+func (a *registry) Each(f func(string, interface{})) {
 	a.mu.Lock()
 	defer a.mu.Unlock()
 	for s, c := range a.names {
@@ -30,17 +30,17 @@ func (a *registryAdapter) Each(f func(string, interface{})) {
 	}
 }
 
-func (a *registryAdapter) Get(s string) interface{} {
+func (a *registry) Get(s string) interface{} {
 	a.mu.Lock()
 	defer a.mu.Unlock()
 	return a.names[s]
 }
 
-func (a *registryAdapter) GetAll() map[string]map[string]interface{} {
+func (a *registry) GetAll() map[string]map[string]interface{} {
 	panic("implement me")
 }
 
-func (a *registryAdapter) GetOrRegister(s string, v interface{}) interface{} {
+func (a *registry) GetOrRegister(s string, v interface{}) interface{} {
 	c := a.Get(s)
 	if c == nil {
 		err := a.Register(s, v)
@@ -52,7 +52,7 @@ func (a *registryAdapter) GetOrRegister(s string, v interface{}) interface{} {
 	return c
 }
 
-func (a *registryAdapter) Register(s string, v interface{}) error {
+func (a *registry) Register(s string, v interface{}) error {
 	c, ok := v.(prometheus.Collector)
 	if !ok {
 		if reflect.TypeOf(v).Kind() == reflect.Func {
@@ -60,19 +60,19 @@ func (a *registryAdapter) Register(s string, v interface{}) error {
 		}
 		switch v := v.(type) {
 		case metrics.Counter:
-			c = NewCounterAdapter(s, v)
+			c = NewCounter(s, v)
 		case metrics.Gauge:
-			c = NewGaugeAdapter(s, v)
+			c = NewGauge(s, v)
 		case metrics.GaugeFloat64:
-			c = NewGaugeFloat64Adapter(s, v)
+			c = NewGaugeFloat64(s, v)
 		case metrics.Healthcheck:
-			c = NewHealthcheckAdapter(s, v)
+			c = NewHealthcheck(s, v)
 		case metrics.Histogram:
-			c = NewHistogramAdapter(s, v)
+			c = NewHistogram(s, v)
 		case metrics.Meter:
-			c = NewMeterAdapter(s, v)
+			c = NewMeter(s, v)
 		case metrics.Timer:
-			c = NewTimerAdapter(s, v)
+			c = NewTimer(s, v)
 		default:
 			fmt.Printf("%s %T %+v\n", s, v, v)
 			return ErrExpectedCollector
@@ -88,7 +88,7 @@ func (a *registryAdapter) Register(s string, v interface{}) error {
 	return nil
 }
 
-func (a *registryAdapter) RunHealthchecks() {
+func (a *registry) RunHealthchecks() {
 	a.Each(func(s string, i interface{}) {
 		if h, ok := i.(metrics.Healthcheck); ok {
 			h.Check()
@@ -96,7 +96,7 @@ func (a *registryAdapter) RunHealthchecks() {
 	})
 }
 
-func (a *registryAdapter) Unregister(s string) {
+func (a *registry) Unregister(s string) {
 	a.mu.Lock()
 	defer a.mu.Unlock()
 	if i, ok := a.names[s].(metrics.Stoppable); ok {
@@ -106,7 +106,7 @@ func (a *registryAdapter) Unregister(s string) {
 	delete(a.names, s)
 }
 
-func (a *registryAdapter) UnregisterAll() {
+func (a *registry) UnregisterAll() {
 	a.mu.Lock()
 	defer a.mu.Unlock()
 	for s, c := range a.names {

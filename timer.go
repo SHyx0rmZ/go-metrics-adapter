@@ -5,16 +5,16 @@ import (
 	"github.com/rcrowley/go-metrics"
 )
 
-type timerAdapter struct {
+type timer struct {
 	metrics.Timer
 	__histogramAdapter
 }
 
-func NewTimerAdapter(s string, m metrics.Timer) interface {
+func NewTimer(s string, m metrics.Timer) interface {
 	prometheus.Collector
 	metrics.Timer
 } {
-	return timerAdapter{
+	return timer{
 		Timer: m,
 		__histogramAdapter: __histogramAdapter{
 			count:      intToUint(m.Count),

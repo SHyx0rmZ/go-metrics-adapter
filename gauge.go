@@ -5,16 +5,16 @@ import (
 	"github.com/rcrowley/go-metrics"
 )
 
-type gaugeAdapter struct {
+type gauge struct {
 	metrics.Gauge
 	__gaugeAdapter
 }
 
-func NewGaugeAdapter(s string, m metrics.Gauge) interface {
+func NewGauge(s string, m metrics.Gauge) interface {
 	prometheus.Collector
 	metrics.Gauge
 } {
-	return gaugeAdapter{
+	return gauge{
 		Gauge: m,
 		__gaugeAdapter: __gaugeAdapter{
 			metric: intToFloat(m.Value),
@@ -23,16 +23,16 @@ func NewGaugeAdapter(s string, m metrics.Gauge) interface {
 	}
 }
 
-type gaugeFloat64Adapter struct {
+type gaugeFloat64 struct {
 	metrics.GaugeFloat64
 	__gaugeAdapter
 }
 
-func NewGaugeFloat64Adapter(s string, m metrics.GaugeFloat64) interface {
+func NewGaugeFloat64(s string, m metrics.GaugeFloat64) interface {
 	prometheus.Collector
 	metrics.GaugeFloat64
 } {
-	return gaugeFloat64Adapter{
+	return gaugeFloat64{
 		GaugeFloat64: m,
 		__gaugeAdapter: __gaugeAdapter{
 			metric: m.Value,

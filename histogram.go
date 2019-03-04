@@ -5,16 +5,16 @@ import (
 	"github.com/rcrowley/go-metrics"
 )
 
-type histogramAdapter struct {
+type histogram struct {
 	metrics.Histogram
 	__histogramAdapter
 }
 
-func NewHistogramAdapter(s string, m metrics.Histogram) interface {
+func NewHistogram(s string, m metrics.Histogram) interface {
 	prometheus.Collector
 	metrics.Histogram
 } {
-	return histogramAdapter{
+	return histogram{
 		Histogram: m,
 		__histogramAdapter: __histogramAdapter{
 			count:      intToUint(m.Count),
