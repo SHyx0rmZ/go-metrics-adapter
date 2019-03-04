@@ -52,6 +52,8 @@ func (a *registryAdapter) Register(s string, v interface{}) error {
 			v = reflect.ValueOf(v).Call(nil)[0].Interface()
 		}
 		switch v := v.(type) {
+		case metrics.Counter:
+			c = NewCounterAdapter(s, v)
 		default:
 			fmt.Printf("%s %T %+v\n", s, v, v)
 			return ErrExpectedCollector
