@@ -44,10 +44,13 @@ jobs:
             - name: metrics-adapter
           run:
             dir: metrics-adapter
-            path: go
+            path: /bin/sh
             args:
-              - test
-              - ./...
+              - -ec
+              - |
+                apk update --quiet
+                apk add --quiet --no-progress git
+                go test ./...
         on_failure:
           put: build-status
           params:
