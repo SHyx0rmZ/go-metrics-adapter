@@ -17,8 +17,8 @@ func NewGauge(s string, m metrics.Gauge) interface {
 	return gauge{
 		Gauge: m,
 		gaugeAdapter: gaugeAdapter{
-			metric: intToFloat(m.Value),
-			desc:   desc(s),
+			metric:      intToFloat(m.Value),
+			description: desc(s),
 		},
 	}
 }
@@ -35,8 +35,8 @@ func NewGaugeFloat64(s string, m metrics.GaugeFloat64) interface {
 	return gaugeFloat64{
 		GaugeFloat64: m,
 		gaugeAdapter: gaugeAdapter{
-			metric: m.Value,
-			desc:   desc(s),
+			metric:      m.Value,
+			description: desc(s),
 		},
 	}
 }

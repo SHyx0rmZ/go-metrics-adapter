@@ -17,8 +17,8 @@ func NewCounter(s string, m metrics.Counter) interface {
 	return counter{
 		Counter: m,
 		gaugeAdapter: gaugeAdapter{
-			metric: intToFloat(m.Count),
-			desc:   desc(s),
+			metric:      intToFloat(m.Count),
+			description: desc(s),
 		},
 	}
 }

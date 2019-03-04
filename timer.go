@@ -17,10 +17,10 @@ func NewTimer(s string, m metrics.Timer) interface {
 	return timer{
 		Timer: m,
 		histogramAdapter: histogramAdapter{
-			count:      intToUint(m.Count),
-			sum:        intToFloat(m.Sum),
-			percentile: floatToUint(m.Percentile),
-			desc:       desc(s),
+			count:       intToUint(m.Count),
+			sum:         intToFloat(m.Sum),
+			percentile:  floatToUint(m.Percentile),
+			description: desc(s),
 		},
 	}
 }

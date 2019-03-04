@@ -5,8 +5,8 @@ import (
 	"strings"
 )
 
-func desc(s string) *prometheus.Desc {
-	return prometheus.NewDesc("witches_io_metrics_adapter_"+strings.Replace(s, "-", "_", -1), "Adapter for "+s, nil, nil)
+func desc(s string) *description {
+	return (*description)(prometheus.NewDesc("witches_io_metrics_adapter_"+strings.Replace(s, "-", "_", -1), "Adapter for "+s, nil, nil))
 }
 
 func intToFloat(f func() int64) func() float64 {

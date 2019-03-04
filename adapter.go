@@ -6,17 +6,26 @@ import (
 	dto "github.com/prometheus/client_model/go"
 )
 
+type description prometheus.Desc
+
 type gaugeAdapter struct {
 	metric func() float64
-	desc   *prometheus.Desc
+	*description
 }
 
-func (a gaugeAdapter) Describe(ch chan<- *prometheus.Desc) {
-	ch <- a.desc
+type histogramAdapter struct {
+	count      func() uint64
+	sum        func() float64
+	percentile func(p float64) uint64
+	*description
 }
 
-func (a gaugeAdapter) Desc() *prometheus.Desc {
-	return a.desc
+func (d *description) Describe(ch chan<- *prometheus.Desc) {
+	ch <- (*prometheus.Desc)(d)
+}
+
+func (d *description) Desc() *prometheus.Desc {
+	return (*prometheus.Desc)(d)
 }
 
 func (a gaugeAdapter) Collect(ch chan<- prometheus.Metric) {
@@ -29,21 +38,6 @@ func (a gaugeAdapter) Write(m *dto.Metric) error {
 		Value: proto.Float64(a.metric()),
 	}
 	return nil
-}
-
-type histogramAdapter struct {
-	count      func() uint64
-	sum        func() float64
-	percentile func(p float64) uint64
-	desc       *prometheus.Desc
-}
-
-func (a histogramAdapter) Describe(ch chan<- *prometheus.Desc) {
-	ch <- a.desc
-}
-
-func (a histogramAdapter) Desc() *prometheus.Desc {
-	return a.desc
 }
 
 func (a histogramAdapter) Collect(ch chan<- prometheus.Metric) {
