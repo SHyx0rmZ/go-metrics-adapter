@@ -1,10 +1,5 @@
 package metrics_adapter
 
-import (
-	"github.com/prometheus/client_golang/prometheus"
-	"strings"
-)
-
 func intToFloat(f func() int64) func() float64 {
 	return func() float64 {
 		return float64(f())
