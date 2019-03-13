@@ -17,8 +17,11 @@ func NewGauge(name string, metric metrics.Gauge) interface {
 	return gauge{
 		Gauge: metric,
 		gaugeAdapter: gaugeAdapter{
-			metric: func() float64 {
-				return float64(metric.Value())
+			metric: func(snapshot interface{}) float64 {
+				return float64(snapshot.(metrics.Gauge).Value())
+			},
+			snapshot: func() interface{} {
+				return metric.Snapshot()
 			},
 			description: newDescriptionFrom(name),
 		},
@@ -37,7 +40,12 @@ func NewGaugeFloat64(name string, metric metrics.GaugeFloat64) interface {
 	return gaugeFloat64{
 		GaugeFloat64: metric,
 		gaugeAdapter: gaugeAdapter{
-			metric:      metric.Value,
+			metric: func(snapshot interface{}) float64 {
+				return snapshot.(metrics.GaugeFloat64).Value()
+			},
+			snapshot: func() interface{} {
+				return metric.Snapshot()
+			},
 			description: newDescriptionFrom(name),
 		},
 	}

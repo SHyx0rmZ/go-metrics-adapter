@@ -17,14 +17,17 @@ func NewTimer(name string, metric metrics.Timer) interface {
 	return timer{
 		Timer: metric,
 		histogramAdapter: histogramAdapter{
-			count: func() uint64 {
-				return uint64(metric.Count())
+			count: func(snapshot interface{}) uint64 {
+				return uint64(snapshot.(metrics.Timer).Count())
 			},
-			sum: func() float64 {
-				return float64(metric.Sum())
+			sum: func(snapshot interface{}) float64 {
+				return float64(snapshot.(metrics.Timer).Sum())
 			},
-			percentile: func(p float64) uint64 {
-				return uint64(metric.Percentile(p))
+			percentile: func(snapshot interface{}, p float64) uint64 {
+				return uint64(snapshot.(metrics.Timer).Percentile(p))
+			},
+			snapshot: func() interface{} {
+				return metric.Snapshot()
 			},
 			description: newDescriptionFrom(name),
 		},

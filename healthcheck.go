@@ -17,11 +17,14 @@ func NewHealthcheck(name string, metric metrics.Healthcheck) interface {
 	return healthcheck{
 		Healthcheck: metric,
 		gaugeAdapter: gaugeAdapter{
-			metric: func() float64 {
-				if metric.Error() != nil {
+			metric: func(snapshot interface{}) float64 {
+				if snapshot.(metrics.Healthcheck).Error() != nil {
 					return 0
 				}
 				return 1
+			},
+			snapshot: func() interface{} {
+				return metric
 			},
 			description: newDescriptionFrom(name),
 		},
