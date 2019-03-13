@@ -17,8 +17,11 @@ func NewCounter(name string, metric metrics.Counter) interface {
 	return counter{
 		Counter: metric,
 		gaugeAdapter: gaugeAdapter{
-			metric: func() float64 {
-				return float64(metric.Count())
+			metric: func(snapshot interface{}) float64 {
+				return float64(snapshot.(metrics.Counter).Count())
+			},
+			snapshot: func() interface{} {
+				return metric.Snapshot()
 			},
 			description: newDescriptionFrom(name),
 		},

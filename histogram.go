@@ -17,14 +17,17 @@ func NewHistogram(name string, metric metrics.Histogram) interface {
 	return histogram{
 		Histogram: metric,
 		histogramAdapter: histogramAdapter{
-			count: func() uint64 {
-				return uint64(metric.Count())
+			count: func(snapshot interface{}) uint64 {
+				return uint64(snapshot.(metrics.Histogram).Count())
 			},
-			sum: func() float64 {
-				return float64(metric.Sum())
+			sum: func(snapshot interface{}) float64 {
+				return float64(snapshot.(metrics.Histogram).Sum())
 			},
-			percentile: func(p float64) uint64 {
-				return uint64(metric.Percentile(p))
+			percentile: func(snapshot interface{}, p float64) uint64 {
+				return uint64(snapshot.(metrics.Histogram).Percentile(p))
+			},
+			snapshot: func() interface{} {
+				return metric.Snapshot()
 			},
 			description: newDescriptionFrom(name),
 		},
