@@ -10,6 +10,8 @@ type counter struct {
 	gaugeAdapter
 }
 
+// NewCounter turns metric into a prometheus.Collector. The description will
+// be taken from name.
 func NewCounter(name string, metric metrics.Counter) interface {
 	prometheus.Collector
 	metrics.Counter

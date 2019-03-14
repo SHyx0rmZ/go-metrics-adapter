@@ -10,6 +10,8 @@ type healthcheck struct {
 	gaugeAdapter
 }
 
+// NewHealthcheck turns metric into a prometheus.Collector. The description
+// will be taken from name.
 func NewHealthcheck(name string, metric metrics.Healthcheck) interface {
 	prometheus.Collector
 	metrics.Healthcheck

@@ -10,6 +10,8 @@ type timer struct {
 	summaryAdapter
 }
 
+// NewTimer turns metric into a prometheus.Collector. The description will
+// be taken from name.
 func NewTimer(name string, metric metrics.Timer) interface {
 	prometheus.Collector
 	metrics.Timer

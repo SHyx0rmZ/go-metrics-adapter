@@ -16,6 +16,7 @@ type registry struct {
 	mu    sync.Mutex
 }
 
+// NewRegistry turns registerer into a metrics.Registry.
 func NewRegistry(registerer prometheus.Registerer) metrics.Registry {
 	return &registry{
 		registerer: registerer,
@@ -23,6 +24,7 @@ func NewRegistry(registerer prometheus.Registerer) metrics.Registry {
 	}
 }
 
+// Call the given function for each registered metric.
 func (a *registry) Each(f func(string, interface{})) {
 	a.mu.Lock()
 	defer a.mu.Unlock()
@@ -31,16 +33,21 @@ func (a *registry) Each(f func(string, interface{})) {
 	}
 }
 
+// Get the metric by the given name or nil if none is registered.
 func (a *registry) Get(name string) interface{} {
 	a.mu.Lock()
 	defer a.mu.Unlock()
 	return a.names[name]
 }
 
+// GetAll metrics in the Registry.
 func (a *registry) GetAll() map[string]map[string]interface{} {
 	panic("implement me")
 }
 
+// Gets an existing metric or registers the given one.
+// The interface can be the metric to register if not found in registry,
+// or a function returning the metric for lazy instantiation.
 func (a *registry) GetOrRegister(name string, v interface{}) interface{} {
 	c := a.Get(name)
 	if c == nil {
@@ -53,6 +60,7 @@ func (a *registry) GetOrRegister(name string, v interface{}) interface{} {
 	return c
 }
 
+// Register the given metric under the given name.
 func (a *registry) Register(name string, v interface{}) error {
 	c, ok := v.(prometheus.Collector)
 	if !ok {
@@ -89,6 +97,7 @@ func (a *registry) Register(name string, v interface{}) error {
 	return nil
 }
 
+// Run all registered healthchecks.
 func (a *registry) RunHealthchecks() {
 	a.Each(func(name string, metric interface{}) {
 		if h, ok := metric.(metrics.Healthcheck); ok {
@@ -97,6 +106,7 @@ func (a *registry) RunHealthchecks() {
 	})
 }
 
+// Unregister the metric with the given name.
 func (a *registry) Unregister(name string) {
 	a.mu.Lock()
 	defer a.mu.Unlock()
@@ -107,6 +117,7 @@ func (a *registry) Unregister(name string) {
 	delete(a.names, name)
 }
 
+// Unregister all metrics.  (Mostly for testing.)
 func (a *registry) UnregisterAll() {
 	a.mu.Lock()
 	defer a.mu.Unlock()

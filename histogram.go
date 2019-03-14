@@ -10,6 +10,8 @@ type histogram struct {
 	summaryAdapter
 }
 
+// NewHistogram turns metric into a prometheus.Collector. The description will
+// be taken from name.
 func NewHistogram(name string, metric metrics.Histogram) interface {
 	prometheus.Collector
 	metrics.Histogram

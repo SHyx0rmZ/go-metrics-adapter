@@ -10,6 +10,8 @@ type gauge struct {
 	gaugeAdapter
 }
 
+// NewGauge turns metric into a prometheus.Collector. The description will
+// be taken from name.
 func NewGauge(name string, metric metrics.Gauge) interface {
 	prometheus.Collector
 	metrics.Gauge
@@ -33,6 +35,8 @@ type gaugeFloat64 struct {
 	gaugeAdapter
 }
 
+// NewGaugeFloat64 turns metric into a prometheus.Collector. The description
+// will be taken from name.
 func NewGaugeFloat64(name string, metric metrics.GaugeFloat64) interface {
 	prometheus.Collector
 	metrics.GaugeFloat64
