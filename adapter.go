@@ -13,15 +13,24 @@ type gaugeAdapter struct {
 	*description
 }
 
-func (a gaugeAdapter) Collect(ch chan<- prometheus.Metric) {
-	ch <- a
+type gaugeAdapterMetric struct {
+	metric   func(snapshot interface{}) float64
+	snapshot interface{}
+	*description
 }
 
-func (a gaugeAdapter) Write(m *dto.Metric) error {
+func (a gaugeAdapter) Collect(ch chan<- prometheus.Metric) {
+	ch <- gaugeAdapterMetric{
+		snapshot:    a.snapshot(),
+		metric:      a.metric,
+		description: a.description,
+	}
+}
+
+func (a gaugeAdapterMetric) Write(m *dto.Metric) error {
 	m.Reset()
-	s := a.snapshot()
 	m.Gauge = &dto.Gauge{
-		Value: proto.Float64(a.metric(s)),
+		Value: proto.Float64(a.metric(a.snapshot)),
 	}
 	return nil
 }
@@ -34,21 +43,34 @@ type summaryAdapter struct {
 	*description
 }
 
-func (a summaryAdapter) Collect(ch chan<- prometheus.Metric) {
-	ch <- a
+type summaryAdapterMetric struct {
+	count      func(snapshot interface{}) uint64
+	sum        func(snapshot interface{}) float64
+	percentile func(snapshot interface{}, p float64) float64
+	snapshot   interface{}
+	*description
 }
 
-func (a summaryAdapter) Write(m *dto.Metric) error {
+func (a summaryAdapter) Collect(ch chan<- prometheus.Metric) {
+	ch <- summaryAdapterMetric{
+		count:       a.count,
+		sum:         a.sum,
+		percentile:  a.percentile,
+		snapshot:    a.snapshot(),
+		description: a.description,
+	}
+}
+
+func (a summaryAdapterMetric) Write(m *dto.Metric) error {
 	m.Reset()
-	s := a.snapshot()
 	m.Summary = &dto.Summary{
-		SampleCount: proto.Uint64(a.count(s)),
-		SampleSum:   proto.Float64(a.sum(s)),
+		SampleCount: proto.Uint64(a.count(a.snapshot)),
+		SampleSum:   proto.Float64(a.sum(a.snapshot)),
 	}
 	for _, p := range quantiles {
 		m.Summary.Quantile = append(m.Summary.Quantile, &dto.Quantile{
 			Quantile: proto.Float64(p),
-			Value:    proto.Float64(a.percentile(s, p)),
+			Value:    proto.Float64(a.percentile(a.snapshot, p)),
 		})
 	}
 	return nil
