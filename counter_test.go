@@ -42,6 +42,9 @@ func TestCounter(t *testing.T) {
 			if err != nil {
 				t.Error(err)
 			}
+			if d.Summary != nil {
+				t.Fatal("Summary != nil")
+			}
 			if d.Gauge == nil {
 				t.Fatal("Gauge == nil")
 			}
