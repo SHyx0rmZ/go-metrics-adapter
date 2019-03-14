@@ -1,7 +1,6 @@
 package metrics_adapter
 
 import (
-	"fmt"
 	"reflect"
 	"sync"
 
@@ -83,7 +82,6 @@ func (a *registry) Register(name string, v interface{}) error {
 		case metrics.Timer:
 			c = NewTimer(name, metric)
 		default:
-			fmt.Printf("%s %T %+v\n", name, metric, metric)
 			return ErrExpectedCollector
 		}
 	}
