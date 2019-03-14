@@ -7,7 +7,7 @@ import (
 
 type timer struct {
 	metrics.Timer
-	histogramAdapter
+	summaryAdapter
 }
 
 func NewTimer(name string, metric metrics.Timer) interface {
@@ -16,15 +16,15 @@ func NewTimer(name string, metric metrics.Timer) interface {
 } {
 	return timer{
 		Timer: metric,
-		histogramAdapter: histogramAdapter{
+		summaryAdapter: summaryAdapter{
 			count: func(snapshot interface{}) uint64 {
 				return uint64(snapshot.(metrics.Timer).Count())
 			},
 			sum: func(snapshot interface{}) float64 {
 				return float64(snapshot.(metrics.Timer).Sum())
 			},
-			percentile: func(snapshot interface{}, p float64) uint64 {
-				return uint64(snapshot.(metrics.Timer).Percentile(p))
+			percentile: func(snapshot interface{}, p float64) float64 {
+				return snapshot.(metrics.Timer).Percentile(p)
 			},
 			snapshot: func() interface{} {
 				return metric.Snapshot()
