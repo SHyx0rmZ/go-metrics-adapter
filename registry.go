@@ -164,10 +164,14 @@ func (a *registry) RunHealthchecks() {
 func (a *registry) Unregister(name string) {
 	a.mu.Lock()
 	defer a.mu.Unlock()
-	if i, ok := a.names[name].(metrics.Stoppable); ok {
+	metric, ok := a.names[name]
+	if !ok {
+		return
+	}
+	if i, ok := metric.(metrics.Stoppable); ok {
 		i.Stop()
 	}
-	a.registerer.Unregister(a.names[name])
+	a.registerer.Unregister(metric)
 	delete(a.names, name)
 }
 
@@ -176,7 +180,11 @@ func (a *registry) UnregisterAll() {
 	a.mu.Lock()
 	defer a.mu.Unlock()
 	for name, c := range a.names {
-		if i, ok := a.names[name].(metrics.Stoppable); ok {
+		metric, ok := a.names[name]
+		if !ok {
+			continue
+		}
+		if i, ok := metric.(metrics.Stoppable); ok {
 			i.Stop()
 		}
 		a.registerer.Unregister(c)
