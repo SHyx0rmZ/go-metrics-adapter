@@ -131,7 +131,7 @@ func (a summaryAdapterMetric) Write(m *dto.Metric) error {
 var quantiles []float64
 
 func init() {
-	for q := range prometheus.DefObjectives {
+	for q := range map[float64]float64{0.5: 0.05, 0.9: 0.01, 0.99: 0.001} {
 		quantiles = append(quantiles, q)
 	}
 	sort.Float64s(quantiles)
